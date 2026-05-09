@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import {
-  Calendar, MapPin, ExternalLink,
+  Calendar, MapPin,
   AlertCircle, SlidersHorizontal,
   Ticket, Clock, ChevronRight,
 } from "lucide-react";

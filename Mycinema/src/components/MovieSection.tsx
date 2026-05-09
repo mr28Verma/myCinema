@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import Navbar from "./Navbar";
 
 const TMDB_IMG = "https://image.tmdb.org/t/p/w500";
 
@@ -39,7 +38,7 @@ export const MovieSection = () => {
     const [selectedLang, setSelectedLang] = useState("hi");
     const [selectedGenre, setSelectedGenre] = useState("");
     const [format, setFormat] = useState("2D");
-    const [sortBy, setSortBy] = useState<"popularity" | "rating" | "date">("popularity");
+    const [sortBy] = useState<"popularity" | "rating" | "date">("popularity");
 
     useEffect(() => {
         setLoading(true);

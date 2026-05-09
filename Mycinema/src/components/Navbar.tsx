@@ -1,6 +1,6 @@
 import {
-  Search, Menu, MapPin, Bell, ChevronDown, Ticket, Play,
-  LogOut, User, Settings, Heart, CalendarCheck, ChevronRight,
+  Search, Menu, MapPin, ChevronDown, Ticket, Play,
+  LogOut, Settings, Heart, CalendarCheck,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
@@ -37,8 +37,6 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
   const [mode, setMode] = useState<"cinema" | "stream">("cinema");
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
   const [user, setUser] = useState<AuthUser | null>(null);
   const [profileOpen, setProfileOpen] = useState(false);
 
