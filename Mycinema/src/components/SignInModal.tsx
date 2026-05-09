@@ -5,7 +5,7 @@ type AuthMode = "login" | "signup";
 type AuthUser = { name: string; email: string };
 
 const SignInModal = ({ onClose, onSuccess }: { onClose: () => void; onSuccess: (u: AuthUser) => void }) => {
-  const [mode, setMode] = useState<AuthMode>("login"); // ← always starts on login
+  const [mode, setMode] = useState<AuthMode>("login");
   const [step, setStep] = useState<"email" | "name" | "password">("email");
   const [formData, setFormData] = useState({ email: "", name: "", password: "" });
   const [showPw, setShowPw] = useState(false);

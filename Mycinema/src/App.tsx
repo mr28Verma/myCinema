@@ -4,7 +4,7 @@ import Navbar from "./components/Navbar";
 import Home from "./components/homePage";
 import Movies from "./components/Movies";
 import { MovieSection } from "./components/MovieSection";
-
+import { Event } from "./components/Events";
 import "./App.css";
 
 function App() {
@@ -37,6 +37,19 @@ function App() {
 
             <div className="mt-10">
               <MovieSection />
+            </div>
+          </>
+        }
+      />
+
+      <Route
+        path="/events"
+        element={
+          <>
+            <Navbar />
+
+            <div className="mt-10">
+              <Event />
             </div>
           </>
         }
