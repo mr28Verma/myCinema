@@ -105,23 +105,45 @@ const Navbar = () => {
   };
 
   const getCurrentLocation = () => {
-    if (!navigator.geolocation) return alert("Geolocation not supported");
-    setLoading(true);
-    navigator.geolocation.getCurrentPosition(
-      async ({ coords: { latitude, longitude } }) => {
+  if (!navigator.geolocation) return alert("Geolocation not supported");
+  setLoading(true);
+  navigator.geolocation.getCurrentPosition(
+    async ({ coords: { latitude, longitude } }) => {
+      try {
+        let cityName: string | null = null;
         try {
           const res = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`
+            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
           );
-          const data = await res.json();
-          const cityName = data.address.city || data.address.town || data.address.village;
-          if (cityName) { setCity(cityName); localStorage.setItem("city", cityName); }
-        } catch { alert("Unable to fetch location"); }
-        finally { setLoading(false); }
-      },
-      () => { alert("Permission denied"); setLoading(false); }
-    );
-  };
+          if (res.ok) {
+            const data = await res.json();
+            cityName = data.city || data.locality || data.principalSubdivision || null;
+          }
+        } catch { /* silently fall through */ }
+        if (!cityName) {
+          cityName = `${latitude.toFixed(2)}°, ${longitude.toFixed(2)}°`;
+        }
+
+        setCity(cityName);
+        localStorage.setItem("city", cityName);
+      } catch {
+        alert("Unable to fetch location");
+      } finally {
+        setLoading(false);
+      }
+    },
+    (err) => {
+      const messages: Record<number, string> = {
+        1: "Location permission denied. Allow access in browser settings.",
+        2: "Location unavailable. Try again.",
+        3: "Location request timed out.",
+      };
+      alert(messages[err.code] ?? "Unable to get location");
+      setLoading(false);
+    },
+    { timeout: 10000, maximumAge: 60000, enableHighAccuracy: false }
+  );
+};
 
   const handleSignInSuccess = (loggedInUser: AuthUser) => {
     setUser(loggedInUser);
