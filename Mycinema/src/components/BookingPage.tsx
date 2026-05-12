@@ -4,6 +4,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { useState, useCallback, useEffect } from "react";
+declare const google: any;
 
 // ─── Types ─────────────────────────────────────────────────────
 type SeatZone = {
