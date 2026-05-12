@@ -5,6 +5,10 @@ import Home from "./components/homePage";
 import Movies from "./components/Movies";
 import { MovieSection } from "./components/MovieSection";
 import { Event } from "./components/Events";
+import { Sports } from "./components/Sports";
+
+import BookingPage from "./components/BookingPage";
+
 import "./App.css";
 
 function App() {
@@ -42,6 +46,7 @@ function App() {
         }
       />
 
+      {/* EVENTS PAGE */}
       <Route
         path="/events"
         element={
@@ -50,6 +55,34 @@ function App() {
 
             <div className="mt-10">
               <Event />
+            </div>
+          </>
+        }
+      />
+
+      {/* SPORTS PAGE */}
+      <Route
+        path="/sports"
+        element={
+          <>
+            <Navbar />
+
+            <div className="mt-10">
+              <Sports />
+            </div>
+          </>
+        }
+      />
+
+      {/* BOOKING PAGE */}
+      <Route
+        path="/booking"
+        element={
+          <>
+            <Navbar />
+
+            <div className="mt-10">
+              <BookingPage />
             </div>
           </>
         }

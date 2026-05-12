@@ -10,7 +10,6 @@ import SignInModal from "./SignInModal";
 const cinemaNavItems = [
   { label: "Movies", sub: "Now showing", icon: Film, to: "/movies" },
   { label: "Events", sub: "Live & upcoming", icon: CalendarRange, to: "/events" },
-  { label: "Plays", sub: "Theatre & drama", icon: Ticket, to: "/" },
   { label: "Sports", sub: "Match tickets", icon: Trophy, to: "/sports" },
   { label: "Activities", sub: "Experiences near you", icon: Zap, to: "/", wide: true },
 ];
@@ -19,12 +18,11 @@ const streamNavItems = [
   { label: "Home", sub: "Your feed", icon: Film, to: "/" },
   { label: "Movies", sub: "Stream now", icon: Film, to: "/movies" },
   { label: "Web Series", sub: "Binge worthy", icon: Play, to: "/" },
-  { label: "Originals", sub: "Exclusive content", icon: Zap, to: "/" },
   { label: "Live TV", sub: "Watch live", icon: Trophy, to: "/", wide: true },
 ];
 
-const cinemaLinks = ["Movies", "Events", "Plays", "Sports", "Activities"];
-const streamLinks = ["Home", "Movies", "Web Series", "Originals", "Live TV"];
+const cinemaLinks = ["Movies", "Events", "Sports", "Activities"];
+const streamLinks = ["Home", "Movies", "Web Series", "Live TV"];
 
 type AuthUser = { name: string; email: string };
 
@@ -111,6 +109,7 @@ const Navbar = () => {
     async ({ coords: { latitude, longitude } }) => {
       try {
         let cityName: string | null = null;
+
         try {
           const res = await fetch(
             `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`

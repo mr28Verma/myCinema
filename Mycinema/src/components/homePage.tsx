@@ -3,6 +3,7 @@ import {
   Tv, Film, Zap, Download, MonitorPlay, Radio, CalendarDays
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 // ─── Types ────────────────────────────────────────────────────
 type TMDBMovieTrending = {
@@ -39,14 +40,14 @@ const genreMap: Record<number, string> = {
 
 const SLIDE_DURATION = 5000;
 const IMG_BASE = "https://image.tmdb.org/t/p";
-const API_BASE  = "https://api.themoviedb.org/3";
+const API_BASE = "https://api.themoviedb.org/3";
 
 
 const ottFeatures = [
   { icon: MonitorPlay, label: "Stream Now", desc: "Watch instantly online", color: "#F84464" },
-  { icon: Download,    label: "Download",   desc: "Watch offline anytime",  color: "#00b4d8" },
-  { icon: Tv,          label: "Live TV",    desc: "100+ live channels",     color: "#c9a227" },
-  { icon: Radio,       label: "Web Series", desc: "Exclusive originals",    color: "#7209b7" },
+  { icon: Download, label: "Download", desc: "Watch offline anytime", color: "#00b4d8" },
+  { icon: Tv, label: "Live TV", desc: "100+ live channels", color: "#c9a227" },
+  { icon: Radio, label: "Web Series", desc: "Exclusive originals", color: "#7209b7" },
 ];
 
 const resolveGenres = (genre_ids?: number[], genres?: { id: number; name: string }[]) => {
@@ -60,11 +61,12 @@ const fmtRuntime = (mins?: number) =>
 
 // ─── Component ────────────────────────────────────────────────
 const HomePage = () => {
-  const [heroMovies,     setHeroMovies]     = useState<TMDBMovieTrending[]>([]);
+  const navigate = useNavigate();
+  const [heroMovies, setHeroMovies] = useState<TMDBMovieTrending[]>([]);
   const [upcomingMovies, setUpcomingMovies] = useState<UpcomingMovie[]>([]);
-  const [activeIndex,    setActiveIndex]    = useState(0);
-  const [animating,      setAnimating]      = useState(false);
-  const [activeTab,      setActiveTab]      = useState<"cinema" | "stream">("cinema");
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [animating, setAnimating] = useState(false);
+  const [activeTab, setActiveTab] = useState<"cinema" | "stream">("cinema");
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const API_KEY = import.meta.env.VITE_MOVIE_API_KEY;
@@ -77,35 +79,35 @@ const HomePage = () => {
   }, []);
 
   useEffect(() => {
-  fetch(`${API_BASE}/movie/upcoming?api_key=${API_KEY}&language=en-US&page=1`)
-    .then((r) => r.json())
-    .then((data) => {
-      const colors = [
-        "#F84464",
-        "#c9a227",
-        "#00b4d8",
-        "#22c55e",
-        "#7209b7",
-      ];
+    fetch(`${API_BASE}/movie/upcoming?api_key=${API_KEY}&language=en-US&page=1`)
+      .then((r) => r.json())
+      .then((data) => {
+        const colors = [
+          "#F84464",
+          "#c9a227",
+          "#00b4d8",
+          "#22c55e",
+          "#7209b7",
+        ];
 
-      const formattedMovies = (data.results || []).slice(0, 5).map(
-        (movie: any, index: number) => ({
-          ...movie,
-          color: colors[index % colors.length],
-          date: movie.release_date
-            ? new Date(movie.release_date).toLocaleDateString("en-US", {
+        const formattedMovies = (data.results || []).slice(0, 5).map(
+          (movie: any, index: number) => ({
+            ...movie,
+            color: colors[index % colors.length],
+            date: movie.release_date
+              ? new Date(movie.release_date).toLocaleDateString("en-US", {
                 month: "short",
                 year: "numeric",
               })
-            : "Coming Soon",
-          genre: resolveGenres(movie.genre_ids),
-        })
-      );
+              : "Coming Soon",
+            genre: resolveGenres(movie.genre_ids),
+          })
+        );
 
-      setUpcomingMovies(formattedMovies);
-    })
-    .catch(console.error);
-}, []);
+        setUpcomingMovies(formattedMovies);
+      })
+      .catch(console.error);
+  }, []);
 
   useEffect(() => {
     if (!heroMovies.length) return;
@@ -124,10 +126,10 @@ const HomePage = () => {
   const goNext = () => goTo((activeIndex + 1) % heroMovies.length);
   const goPrev = () => goTo((activeIndex - 1 + heroMovies.length) % heroMovies.length);
 
-  const movie      = heroMovies[activeIndex];
+  const movie = heroMovies[activeIndex];
   const heroGenres = movie ? resolveGenres(movie.genre_ids) : "";
-  const year       = movie?.release_date?.split("-")[0] ?? "";
-  const rating     = movie?.vote_average?.toFixed(1) ?? "";
+  const year = movie?.release_date?.split("-")[0] ?? "";
+  const rating = movie?.vote_average?.toFixed(1) ?? "";
 
   return (
     <div className="bg-[#080808] min-h-screen font-['DM_Sans',sans-serif]">
@@ -138,11 +140,10 @@ const HomePage = () => {
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`flex items-center gap-1.5 md:gap-2 px-4 md:px-5 py-2 rounded-full text-[12px] md:text-[13px] font-bold transition-all duration-200 ${
-              activeTab === tab
-                ? "bg-[#F84464] text-white shadow-[0_4px_20px_rgba(248,68,100,0.35)]"
-                : "text-gray-500 hover:text-white"
-            }`}
+            className={`flex items-center gap-1.5 md:gap-2 px-4 md:px-5 py-2 rounded-full text-[12px] md:text-[13px] font-bold transition-all duration-200 ${activeTab === tab
+              ? "bg-[#F84464] text-white shadow-[0_4px_20px_rgba(248,68,100,0.35)]"
+              : "text-gray-500 hover:text-white"
+              }`}
           >
             {tab === "cinema"
               ? <Ticket className="w-3 h-3 md:w-3.5 md:h-3.5" />
@@ -265,7 +266,10 @@ const HomePage = () => {
                 <div className="flex flex-wrap gap-2 md:gap-3">
                   {activeTab === "cinema" ? (
                     <>
-                      <button className="flex items-center gap-1.5 md:gap-2 bg-[#F84464] hover:bg-[#e03455] text-white font-black text-xs md:text-sm px-4 md:px-7 py-2.5 md:py-3.5 rounded-lg md:rounded-xl transition-all active:scale-95 shadow-[0_8px_32px_rgba(248,68,100,0.4)] group">
+                      <button
+                        onClick={() => navigate("/booking")}
+                        className="flex items-center gap-1.5 md:gap-2 bg-[#F84464] hover:bg-[#e03455] text-white font-black text-xs md:text-sm px-4 md:px-7 py-2.5 md:py-3.5 rounded-lg md:rounded-xl transition-all active:scale-95 shadow-[0_8px_32px_rgba(248,68,100,0.4)] group"
+                      >
                         <Ticket className="w-3.5 h-3.5 group-hover:rotate-12 transition-transform" />
                         Book Tickets
                       </button>
@@ -467,6 +471,7 @@ const HomePage = () => {
                         </p>
                       )}
                       <button
+                        onClick={() => navigate("/booking")}
                         className="mt-2 text-[11px] font-bold px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-y-1 group-hover:translate-y-0"
                         style={{ background: film.color, color: "#fff" }}
                       >
