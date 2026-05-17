@@ -267,7 +267,13 @@ const HomePage = () => {
                   {activeTab === "cinema" ? (
                     <>
                       <button
-                        onClick={() => navigate("/booking")}
+                        onClick={() =>
+                          navigate("/booking", {
+                            state: {
+                              movie
+                            }
+                          })
+                        }
                         className="flex items-center gap-1.5 md:gap-2 bg-[#F84464] hover:bg-[#e03455] text-white font-black text-xs md:text-sm px-4 md:px-7 py-2.5 md:py-3.5 rounded-lg md:rounded-xl transition-all active:scale-95 shadow-[0_8px_32px_rgba(248,68,100,0.4)] group"
                       >
                         <Ticket className="w-3.5 h-3.5 group-hover:rotate-12 transition-transform" />
@@ -471,7 +477,13 @@ const HomePage = () => {
                         </p>
                       )}
                       <button
-                        onClick={() => navigate("/booking")}
+                        onClick={() =>
+                          navigate("/booking", {
+                            state: {
+                              movie: heroMovies[activeIndex]
+                            }
+                          })
+                        }
                         className="mt-2 text-[11px] font-bold px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-y-1 group-hover:translate-y-0"
                         style={{ background: film.color, color: "#fff" }}
                       >

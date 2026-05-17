@@ -6,6 +6,7 @@ import {
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import SignInModal from "./SignInModal";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const cinemaNavItems = [
   { label: "Movies", sub: "Now showing", icon: Film, to: "/movies" },
@@ -15,10 +16,13 @@ const cinemaNavItems = [
 ];
 
 const streamNavItems = [
-  { label: "Home", sub: "Your feed", icon: Film, to: "/" },
-  { label: "Movies", sub: "Stream now", icon: Film, to: "/movies" },
-  { label: "Web Series", sub: "Binge worthy", icon: Play, to: "/" },
-  { label: "Live TV", sub: "Watch live", icon: Trophy, to: "/", wide: true },
+  { label: "Home", sub: "Your feed", icon: Film, to: "/stream" },
+
+  { label: "Movies", sub: "Stream now", icon: Film, to: "/stream/movies" },
+
+  { label: "Web Series", sub: "Binge worthy", icon: Play, to: "/stream/webseries" },
+
+  { label: "Live TV", sub: "Watch live", icon: Trophy, to: "/stream/live", wide: true },
 ];
 
 const cinemaLinks = ["Movies", "Events", "Sports", "Activities"];
@@ -45,24 +49,51 @@ const profileMenuItems = [
   { icon: Settings, label: "Settings", to: "/settings" },
 ];
 
-const getLinkPath = (item: string) => {
+const getLinkPath = (item: string, mode: "cinema" | "stream") => {
+
+  // STREAM MODE
+  if (mode === "stream") {
+
+    if (item === "Home") return "/stream";
+
+    if (item === "Movies") return "/stream/movies";
+
+    if (item === "Web Series") return "/stream/webseries";
+
+    if (item === "Live TV") return "/stream/live";
+
+    return "/stream";
+  }
+
+  // CINEMA MODE
   if (item === "Movies") return "/movies";
+
   if (item === "Events") return "/events";
+
   if (item === "Sports") return "/sports";
+
   return "/";
 };
 
 const Navbar = () => {
+
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const [city, setCity] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
-  const [mode, setMode] = useState<"cinema" | "stream">("cinema");
   const [user, setUser] = useState<AuthUser | null>(null);
   const [profileOpen, setProfileOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isChanging, setIsChanging] = useState(false);
+
+  const mode =
+  location.pathname.startsWith("/stream")
+    ? "stream"
+    : "cinema";
 
   const profileRef = useRef<HTMLDivElement>(null);
 
@@ -97,52 +128,69 @@ const Navbar = () => {
   }, []);
 
   const handleModeToggle = (newMode: "cinema" | "stream") => {
+
     if (newMode === mode) return;
+
     setIsChanging(true);
-    setTimeout(() => { setMode(newMode); setIsChanging(false); }, 200);
+
+    setTimeout(() => {
+
+      if (newMode === "stream") {
+
+        navigate("/stream");
+
+      } else {
+
+        navigate("/");
+
+      }
+
+      setIsChanging(false);
+
+    }, 200);
   };
 
   const getCurrentLocation = () => {
-  if (!navigator.geolocation) return alert("Geolocation not supported");
-  setLoading(true);
-  navigator.geolocation.getCurrentPosition(
-    async ({ coords: { latitude, longitude } }) => {
-      try {
-        let cityName: string | null = null;
-
+    if (!navigator.geolocation) return alert("Geolocation not supported");
+    setLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      async ({ coords: { latitude, longitude } }) => {
         try {
-          const res = await fetch(
-            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
-          );
-          if (res.ok) {
-            const data = await res.json();
-            cityName = data.city || data.locality || data.principalSubdivision || null;
-          }
-        } catch { /* silently fall through */ }
-        if (!cityName) {
-          cityName = `${latitude.toFixed(2)}°, ${longitude.toFixed(2)}°`;
-        }
+          let cityName: string | null = null;
 
-        setCity(cityName);
-        localStorage.setItem("city", cityName);
-      } catch {
-        alert("Unable to fetch location");
-      } finally {
+          try {
+            const res = await fetch(
+              `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
+            );
+            if (res.ok) {
+              const data = await res.json();
+              cityName = data.city || data.locality || data.principalSubdivision || null;
+            }
+          } catch { /* silently fall through */ }
+          if (!cityName) {
+            cityName = `${latitude.toFixed(2)}°, ${longitude.toFixed(2)}°`;
+          }
+
+          setCity(cityName);
+          localStorage.setItem("city", cityName);
+        } catch {
+          alert("Unable to fetch location");
+        } finally {
+          setLoading(false);
+        }
+      },
+      (err) => {
+        const messages: Record<number, string> = {
+          1: "Location permission denied. Allow access in browser settings.",
+          2: "Location unavailable. Try again.",
+          3: "Location request timed out.",
+        };
+        alert(messages[err.code] ?? "Unable to get location");
         setLoading(false);
-      }
-    },
-    (err) => {
-      const messages: Record<number, string> = {
-        1: "Location permission denied. Allow access in browser settings.",
-        2: "Location unavailable. Try again.",
-        3: "Location request timed out.",
-      };
-      alert(messages[err.code] ?? "Unable to get location");
-      setLoading(false);
-    },
-    { timeout: 10000, maximumAge: 60000, enableHighAccuracy: false }
-  );
-};
+      },
+      { timeout: 10000, maximumAge: 60000, enableHighAccuracy: false }
+    );
+  };
 
   const handleSignInSuccess = (loggedInUser: AuthUser) => {
     setUser(loggedInUser);
@@ -170,7 +218,10 @@ const Navbar = () => {
         <div className="max-w-[1400px] mx-auto flex items-center justify-between px-4 md:px-6 py-3 border-b border-white/[0.06]">
 
           {/* LOGO */}
-          <Link to="/" className="flex items-center shrink-0">
+          <Link
+            to={mode === "stream" ? "/stream" : "/"}
+            className="flex items-center shrink-0"
+          >
             <span className="text-[20px] md:text-[21px] font-black tracking-tighter text-white">my</span>
             <span
               className="text-[20px] md:text-[21px] font-black tracking-tighter transition-colors duration-500"
@@ -285,7 +336,7 @@ const Navbar = () => {
               {navLinks.map((item) => (
                 <Link
                   key={item}
-                  to={getLinkPath(item)}
+                  to={getLinkPath(item, mode)}
                   className="relative text-[13px] font-semibold text-gray-400 hover:text-white transition-colors py-2 group"
                 >
                   {item}
