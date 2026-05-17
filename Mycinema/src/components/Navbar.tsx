@@ -1,7 +1,7 @@
 import {
   Search, MapPin, ChevronDown, Ticket, Play,
   LogOut, Settings, Heart, CalendarCheck, X, Menu,
-  Film, CalendarRange, Trophy, Zap,
+  Film, CalendarRange, Trophy,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
@@ -11,8 +11,6 @@ import { useNavigate, useLocation } from "react-router-dom";
 const cinemaNavItems = [
   { label: "Movies", sub: "Now showing", icon: Film, to: "/movies" },
   { label: "Events", sub: "Live & upcoming", icon: CalendarRange, to: "/events" },
-  { label: "Sports", sub: "Match tickets", icon: Trophy, to: "/sports" },
-  { label: "Activities", sub: "Experiences near you", icon: Zap, to: "/", wide: true },
 ];
 
 const streamNavItems = [
@@ -25,7 +23,7 @@ const streamNavItems = [
   { label: "Live TV", sub: "Watch live", icon: Trophy, to: "/stream/live", wide: true },
 ];
 
-const cinemaLinks = ["Movies", "Events", "Sports", "Activities"];
+const cinemaLinks = ["Movies", "Events"];
 const streamLinks = ["Home", "Movies", "Web Series", "Live TV"];
 
 type AuthUser = { name: string; email: string };
@@ -410,13 +408,12 @@ const Navbar = () => {
 
           {/* Nav card grid */}
           <div className="grid grid-cols-2 gap-2.5 px-4 mt-3">
-            {mobileNavItems.map(({ label, sub, icon: Icon, to, wide }) => (
+            {mobileNavItems.map(({ label, sub, icon: Icon, to}) => (
               <Link
                 key={label}
                 to={to}
                 onClick={() => setMobileMenuOpen(false)}
-                className={`flex items-center gap-3 bg-white/[0.04] border border-white/[0.07] rounded-2xl p-4 active:scale-[0.97] transition-transform${wide ? " col-span-2" : ""}`}
-              >
+                className="flex items-center gap-3 bg-white/[0.04] border border-white/[0.07] rounded-2xl p-4 active:scale-[0.97] transition-transform"              >
                 <div
                   className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
                   style={{ backgroundColor: `${accentColor}22` }}

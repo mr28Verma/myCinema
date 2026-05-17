@@ -5,7 +5,6 @@ import Home from "./components/homePage";
 import Movies from "./components/Movies";
 import { MovieSection } from "./components/MovieSection";
 import { Event } from "./components/Events";
-import { Sports } from "./components/Sports";
 import { StreamPage } from "./components/StreamPage";
 
 import BookingPage from "./components/BookingPage";
@@ -56,20 +55,6 @@ function App() {
 
             <div className="mt-10">
               <Event />
-            </div>
-          </>
-        }
-      />
-
-      {/* SPORTS PAGE */}
-      <Route
-        path="/sports"
-        element={
-          <>
-            <Navbar />
-
-            <div className="mt-10">
-              <Sports />
             </div>
           </>
         }
